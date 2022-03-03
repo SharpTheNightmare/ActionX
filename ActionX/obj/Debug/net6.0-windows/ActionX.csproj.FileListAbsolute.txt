@@ -1,0 +1,16 @@
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\bin\Debug\net6.0-windows\ActionX.deps.json
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\bin\Debug\net6.0-windows\ActionX.dll
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\bin\Debug\net6.0-windows\AxInterop.ShockwaveFlashObjects.dll
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\bin\Debug\net6.0-windows\RBot.dll
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\bin\Debug\net6.0-windows\Interop.ShockwaveFlashObjects.dll
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.csproj.AssemblyReference.cache
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.ActionX.resources
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.csproj.GenerateResource.cache
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.AssemblyInfoInputs.cache
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.AssemblyInfo.cs
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.csproj.CoreCompileInputs.cache
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.csproj.CopyComplete
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ActionX.dll
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\refint\ActionX.dll
+C:\Users\koent\Documents\Visual Studio\repos\ActionX\ActionX\obj\Debug\net6.0-windows\ref\ActionX.dll

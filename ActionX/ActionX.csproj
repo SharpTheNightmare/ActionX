@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>annotations</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="AxInterop.ShockwaveFlashObjects">
+      <HintPath>..\..\GrimliteRev-Internal2\Source Code (v1.3)\Dependency\AxInterop.ShockwaveFlashObjects.dll</HintPath>
+      <CopyLocal>False</CopyLocal>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="RBot">
+      <HintPath>..\..\..\..\..\Desktop\.Games\AE\BattleOn\AQWorlds\RBot 4\RBot.dll</HintPath>
+      <CopyLocal>False</CopyLocal>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+
+</Project>
