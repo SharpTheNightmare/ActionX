@@ -1,4 +1,4 @@
-﻿using RBot;
+using RBot;
 using RBot.Flash;
 using System.Net;
 using System.Net.Sockets;
@@ -18,7 +18,8 @@ namespace ActionX
         private NetworkStream? ThisStream;
         public MyList<Client> Clients = new();
         private static string IP => Instance.HostIPTextBox.Text;
-        static private string Port => Instance.PortTextBox.Value.ToString();
+        private static string Port => Instance.PortTextBox.Value.ToString();
+        private string? HostPName;
         public bool IsOn
         {
             get
@@ -70,7 +71,7 @@ namespace ActionX
                     {
                         StopHost();
                     });
-                    AddLog("All Connection Closed");
+                    AddLog("All connection closed");
                 }
             }
             else
@@ -102,6 +103,7 @@ namespace ActionX
                     IPAddress? localAddr = IPAddress.Parse(IP);
                     TCPServer = new TcpListener(localAddr, port);
                     TCPServer.Start();
+                    GetHostName.Start();
                     for (; ; )
                     {
                         TcpClient? tcpClient = await TCPServer.AcceptTcpClientAsync();
@@ -115,13 +117,19 @@ namespace ActionX
                 {
                     if (ex.Message.StartsWith("Cannot access a disposed object"))
                     {
-                        AddLog("TCP Accepter Terminated");
+                        AddLog("TCP accepter terminated");
                     }
                     else if (ex.Message.StartsWith("Only one usage of each socket address (protocol/network address/port) is normally permitted"))
                     {
                         StopHost();
                         DoStopUI();
                         AddLog("Address/port already been used");
+                    }
+                    else if (ex.Message.StartsWith("The I/O operation has been aborted because of either a thread exit or an application request."))
+                    {
+                        StopHost();
+                        DoStopUI();
+                        AddLog("I/O operation has been aborted. (Server was closed)");
                     }
                     else
                     {
@@ -178,12 +186,14 @@ namespace ActionX
         {
             if (!ClientCheckBox.Checked)
             {
+                ClientCheckBox.Enabled = false;
                 ConnectionGB.Enabled = false;
                 StartConButton.Text = "Stop";
                 FlashUtil.FlashCall += new FlashCallHandler(PacketStream);
             }
             else
             {
+                ClientCheckBox.Enabled = false;
                 ConnectionGB.Enabled = false;
                 StartConButton.Enabled = false;
                 StartConButton.Text = "Disconnect";
@@ -194,12 +204,14 @@ namespace ActionX
         {
             if (!ClientCheckBox.Checked)
             {
+                ClientCheckBox.Enabled = true;
                 ConnectionGB.Enabled = true;
                 StartConButton.Text = "Start";
                 FlashUtil.FlashCall -= new FlashCallHandler(PacketStream);
             }
             else
             {
+                ClientCheckBox.Enabled = true;
                 ConnectionGB.Enabled = true;
                 StartConButton.Enabled = true;
                 StartConButton.Text = "Connect";
@@ -238,7 +250,7 @@ namespace ActionX
                 while ((count = ThisStream.Read(array, 0, array.Length)) != 0)
                 {
                     empty = Encoding.ASCII.GetString(array, 0, count);
-                    AddLog(" * Received: " + empty);
+                    AddLog($" * Received: {empty}");
                     if (empty.StartsWith("%") || empty.StartsWith("$"))
                     {
                         CopyPacket(empty);
@@ -255,13 +267,17 @@ namespace ActionX
             }
             catch (Exception ex)
             {
-                if (ex.Message.StartsWith("Unable to read data from the transport connection: A blocking operation was interrupted by a call to WSACancelBlockingCall."))
+                if (ex.Message.StartsWith("Unable to read data from the transport connection: An established connection was aborted by the software in your host machine."))
                 {
-                    AddLog("Client Listen Terminated");
+                    AddLog("Client listen terminated");
+                }
+                else if (ex.Message.StartsWith("Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host."))
+                {
+                    AddLog("Host server terminated");
                 }
                 else
                 {
-                    AddLog(string.Format("Error (clientListen): {0}", ex));
+                    AddLog($"Error (clientListen): {ex}");
                 }
             }
         }
@@ -294,7 +310,7 @@ namespace ActionX
                 {
                     byte[]? bytes = Encoding.ASCII.GetBytes(message);
                     ThisStream.Write(bytes, 0, bytes.Length);
-                    AddLog(" * Sent: " + message);
+                    AddLog($" * Sent: {message}");
                 }
                 catch (Exception arg)
                 {
@@ -311,7 +327,6 @@ namespace ActionX
         #endregion
 
         #region CheckBoxes
-
         private void ClientCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (ClientCheckBox.Checked)
@@ -323,18 +338,21 @@ namespace ActionX
                 ConClientTextBox.Visible = false;
                 HostTooCheckBox.Visible = false;
                 UnlockLabel.Visible = true;
+                AutoAttackCheckBox.Enabled = false;
                 InfiniteRangeCheckBox.Enabled = false;
                 SkipCutsceneCheckBox.Enabled = false;
                 ProvokeCheckBox.Enabled = false;
                 LagKillerCheckBox.Enabled = false;
                 HidePlayersCheckBox.Enabled = false;
 
+                AutoAttackCheckBox.MouseUp += CheckBox_MouseUp;
                 InfiniteRangeCheckBox.MouseUp += CheckBox_MouseUp;
                 SkipCutsceneCheckBox.MouseUp += CheckBox_MouseUp;
                 ProvokeCheckBox.MouseUp += CheckBox_MouseUp;
                 LagKillerCheckBox.MouseUp += CheckBox_MouseUp;
                 HidePlayersCheckBox.MouseUp += CheckBox_MouseUp;
 
+                AutoAttackCheckBox.CheckedChanged += CheckBox_CheckedChanged;
                 InfiniteRangeCheckBox.CheckedChanged += CheckBox_CheckedChanged;
                 SkipCutsceneCheckBox.CheckedChanged += CheckBox_CheckedChanged;
                 ProvokeCheckBox.CheckedChanged += CheckBox_CheckedChanged;
@@ -350,18 +368,21 @@ namespace ActionX
                 ConClientTextBox.Visible = true;
                 HostTooCheckBox.Visible = true;
                 UnlockLabel.Visible = false;
+                AutoAttackCheckBox.Enabled = true;
                 InfiniteRangeCheckBox.Enabled = true;
                 SkipCutsceneCheckBox.Enabled = true;
                 ProvokeCheckBox.Enabled = true;
                 LagKillerCheckBox.Enabled = true;
                 HidePlayersCheckBox.Enabled = true;
 
+                AutoAttackCheckBox.MouseUp -= CheckBox_MouseUp;
                 InfiniteRangeCheckBox.MouseUp -= CheckBox_MouseUp;
                 SkipCutsceneCheckBox.MouseUp -= CheckBox_MouseUp;
                 ProvokeCheckBox.MouseUp -= CheckBox_MouseUp;
                 LagKillerCheckBox.MouseUp -= CheckBox_MouseUp;
                 HidePlayersCheckBox.MouseUp -= CheckBox_MouseUp;
 
+                AutoAttackCheckBox.CheckedChanged -= CheckBox_CheckedChanged;
                 InfiniteRangeCheckBox.CheckedChanged -= CheckBox_CheckedChanged;
                 SkipCutsceneCheckBox.CheckedChanged -= CheckBox_CheckedChanged;
                 ProvokeCheckBox.CheckedChanged -= CheckBox_CheckedChanged;
@@ -372,6 +393,7 @@ namespace ActionX
 
         private void UnlockLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            AutoAttackCheckBox.Enabled = true;
             InfiniteRangeCheckBox.Enabled = true;
             SkipCutsceneCheckBox.Enabled = true;
             ProvokeCheckBox.Enabled = true;
@@ -433,6 +455,47 @@ namespace ActionX
             LogTextBox.ScrollToCaret();
         }
 
+        private async void AutoAttackCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!ClientCheckBox.Checked) SendHCMSG(string.Format("$AutoAttack:{0}", AutoAttackCheckBox.Checked), "h");
+            if (HostTooCheckBox.Checked && AutoAttackCheckBox.Checked && Bot.Player.LoggedIn && Bot.Map.Loaded && Bot.Monsters.MapMonsters.Count != 0)
+            {
+                int i = 1;
+                while (i <= 4 && AutoAttackCheckBox.Checked)
+                {
+                    Bot.Player.Attack("*");
+                    if (Bot.Player.CanUseSkill(i))
+                    {
+                        Bot.Player.UseSkill(i);
+                    }
+                    await Task.Delay(50);
+                    if (i == 4)
+                    {
+                        i = 0;
+                    }
+                    i++;
+                }
+            }
+            else if (ClientCheckBox.Checked && AutoAttackCheckBox.Checked && Bot.Player.LoggedIn && Bot.Map.Loaded && Bot.Monsters.MapMonsters.Count != 0)
+            {
+                int i = 1;
+                while (i <= 4 && AutoAttackCheckBox.Checked)
+                {
+                    Bot.Player.Attack("*");
+                    if (Bot.Player.CanUseSkill(i))
+                    {
+                        Bot.Player.UseSkill(i);
+                    }
+                    await Task.Delay(50);
+                    if (i == 4)
+                    {
+                        i = 0;
+                    }
+                    i++;
+                }
+            }
+        }
+
         private void InfiniteRangeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             SendHCMSG(string.Format("$InfiniteRange:{0}", InfiniteRangeCheckBox.Checked), "h");
@@ -475,7 +538,7 @@ namespace ActionX
 
         private void SkipCutsceneCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            SendHCMSG(string.Format("SkipCuts:{0}", SkipCutsceneCheckBox.Checked), "h");
+            SendHCMSG(string.Format("$SkipCuts:{0}", SkipCutsceneCheckBox.Checked), "h");
             if (HostTooCheckBox.Checked)
             {
                 Bot.Options.SkipCutscenes = SkipCutsceneCheckBox.Checked;
@@ -532,7 +595,7 @@ namespace ActionX
             }
             catch (Exception ex)
             {
-                AddLog("error (PacketStream): " + ex.ToString());
+                AddLog($"Error (PacketStream): {ex}");
             }
         }
 
@@ -542,7 +605,15 @@ namespace ActionX
             {
                 if (raw.StartsWith("$"))
                 {
-                    if (raw.StartsWith("$Provoke"))
+                    if (raw.StartsWith("$AutoAttack"))
+                    {
+                        if (AutoAttackCheckBox.Enabled)
+                        {
+                            bool setToThis = bool.Parse(raw.Split(new char[] { ':' })[1]);
+                            AutoAttackCheckBox.Checked = setToThis;
+                        }
+                    }
+                    else if (raw.StartsWith("$Provoke"))
                     {
                         if (ProvokeCheckBox.Enabled)
                         {
@@ -631,7 +702,7 @@ namespace ActionX
                     {
                         if (command == "house")
                         {
-                            Bot.SendClientPacket(raw, "String");
+                            Bot.SendPacket(raw, "String");
                         }
                         else
                         {
@@ -641,6 +712,11 @@ namespace ActionX
                                 Bot.Player.Jump("Blank", "Spawn");
                             }
                             Bot.Player.Join(map, "Enter", "Spawn");
+                            await Task.Delay(100);
+                            if (HostPName != null && !Bot.Map.PlayerNames.Contains(HostPName))
+                            {
+                                Bot.Player.Goto(HostPName);
+                            }
                             AddLog(" - Executed: " + map);
                         }
                     }
@@ -651,30 +727,27 @@ namespace ActionX
                         Bot.Player.Jump(cell, pad);
                         AddLog(" - Executed: " + cell + "," + pad);
                     }
-                    else
+                    else if (BuyCheckBox.Checked && command == "buyItem")
                     {
-                        if (BuyCheckBox.Checked && command == "buyItem")
+                        int? itemId = int.Parse(msg[5]);
+                        int shopId = int.Parse(msg[6]);
+                        Bot.Shops.Load(shopId);
+                        int i = 0;
+                        while (i < 50 && !Bot.Shops.IsShopLoaded && Bot.Player.LoggedIn && BuyCheckBox.Checked && IsOn)
                         {
-                            int? itemId = int.Parse(msg[5]);
-                            int shopId = int.Parse(msg[6]);
-                            Bot.Shops.Load(shopId);
-                            int i = 0;
-                            while (i < 50 && !Bot.Shops.IsShopLoaded && Bot.Player.LoggedIn && BuyCheckBox.Checked && IsOn)
-                            {
-                                await Task.Delay(150);
-                                int num = i;
-                                i = num + 1;
-                            }
-                            if (Bot.Shops.IsShopLoaded && Bot.Player.LoggedIn && BuyCheckBox.Checked && IsOn)
-                            {
-                                string? itemName = Bot.Shops.ShopItems.Find(o => o.ID == itemId).Name;
-                                Bot.Shops.BuyItem(itemName);
-                                AddLog(" - Executed: Buy " + itemName);
-                            }
-                            else
-                            {
-                                AddLog(string.Format(" - Execution Cancelled: : Buy {0}/{1}", shopId, itemId));
-                            }
+                            await Task.Delay(150);
+                            int num = i;
+                            i = num + 1;
+                        }
+                        if (Bot.Shops.IsShopLoaded && Bot.Player.LoggedIn && BuyCheckBox.Checked && IsOn)
+                        {
+                            string? itemName = Bot.Shops.ShopItems.Find(o => o.ID == itemId).Name;
+                            Bot.Shops.BuyItem(itemName);
+                            AddLog(" - Executed: Buy " + itemName);
+                        }
+                        else
+                        {
+                            AddLog(string.Format(" - Execution Cancelled: : Buy {0}/{1}", shopId, itemId));
                         }
                     }
                 }
@@ -685,5 +758,21 @@ namespace ActionX
             }
         }
         #endregion
+
+        private void GetHostName_Tick(object sender, EventArgs e)
+        {
+            if (Bot.Player.LoggedIn && Bot.Map.Loaded && StartConButton.Text == "Stop")
+            {
+                try
+                {
+                    HostPName = Bot.Player.Username;
+                }
+                catch { }
+            }
+            else if (StartConButton.Text == "Start")
+            {
+                GetHostName.Stop();
+            }
+        }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.ClientCheckBox = new System.Windows.Forms.CheckBox();
             this.HostIPTextBox = new System.Windows.Forms.TextBox();
             this.PortTextBox = new System.Windows.Forms.NumericUpDown();
@@ -44,6 +45,7 @@
             this.AcceptQuestCheckBox = new System.Windows.Forms.CheckBox();
             this.LoadQuestCheckBox = new System.Windows.Forms.CheckBox();
             this.OptionsGB = new System.Windows.Forms.GroupBox();
+            this.AutoAttackCheckBox = new System.Windows.Forms.CheckBox();
             this.UnlockLabel = new System.Windows.Forms.LinkLabel();
             this.SkipCutsceneCheckBox = new System.Windows.Forms.CheckBox();
             this.HidePlayersCheckBox = new System.Windows.Forms.CheckBox();
@@ -55,6 +57,7 @@
             this.ConClientTextBox = new System.Windows.Forms.Label();
             this.BroadcastTextBox = new System.Windows.Forms.TextBox();
             this.BroadcastMSG = new System.Windows.Forms.Button();
+            this.GetHostName = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.PortTextBox)).BeginInit();
             this.ConnectionGB.SuspendLayout();
             this.SendOptionsGB.SuspendLayout();
@@ -76,7 +79,6 @@
             // 
             this.HostIPTextBox.Location = new System.Drawing.Point(49, 16);
             this.HostIPTextBox.Name = "HostIPTextBox";
-            this.HostIPTextBox.ReadOnly = true;
             this.HostIPTextBox.Size = new System.Drawing.Size(115, 23);
             this.HostIPTextBox.TabIndex = 1;
             this.HostIPTextBox.Text = "127.0.0.1";
@@ -255,6 +257,7 @@
             // 
             // OptionsGB
             // 
+            this.OptionsGB.Controls.Add(this.AutoAttackCheckBox);
             this.OptionsGB.Controls.Add(this.UnlockLabel);
             this.OptionsGB.Controls.Add(this.SkipCutsceneCheckBox);
             this.OptionsGB.Controls.Add(this.HidePlayersCheckBox);
@@ -268,6 +271,17 @@
             this.OptionsGB.TabIndex = 7;
             this.OptionsGB.TabStop = false;
             this.OptionsGB.Text = "Send Toggle Options";
+            // 
+            // AutoAttackCheckBox
+            // 
+            this.AutoAttackCheckBox.AutoSize = true;
+            this.AutoAttackCheckBox.Location = new System.Drawing.Point(18, 20);
+            this.AutoAttackCheckBox.Name = "AutoAttackCheckBox";
+            this.AutoAttackCheckBox.Size = new System.Drawing.Size(89, 19);
+            this.AutoAttackCheckBox.TabIndex = 14;
+            this.AutoAttackCheckBox.Text = "Auto Attack";
+            this.AutoAttackCheckBox.UseVisualStyleBackColor = true;
+            this.AutoAttackCheckBox.CheckedChanged += new System.EventHandler(this.AutoAttackCheckBox_CheckedChanged);
             // 
             // UnlockLabel
             // 
@@ -285,7 +299,7 @@
             // 
             this.SkipCutsceneCheckBox.AutoSize = true;
             this.SkipCutsceneCheckBox.Font = new System.Drawing.Font("Segoe UI", 7.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.SkipCutsceneCheckBox.Location = new System.Drawing.Point(77, 64);
+            this.SkipCutsceneCheckBox.Location = new System.Drawing.Point(132, 64);
             this.SkipCutsceneCheckBox.Name = "SkipCutsceneCheckBox";
             this.SkipCutsceneCheckBox.Size = new System.Drawing.Size(103, 17);
             this.SkipCutsceneCheckBox.TabIndex = 6;
@@ -297,7 +311,7 @@
             // 
             this.HidePlayersCheckBox.AutoSize = true;
             this.HidePlayersCheckBox.Font = new System.Drawing.Font("Segoe UI", 7.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.HidePlayersCheckBox.Location = new System.Drawing.Point(154, 41);
+            this.HidePlayersCheckBox.Location = new System.Drawing.Point(143, 41);
             this.HidePlayersCheckBox.Name = "HidePlayersCheckBox";
             this.HidePlayersCheckBox.Size = new System.Drawing.Size(88, 17);
             this.HidePlayersCheckBox.TabIndex = 4;
@@ -309,7 +323,7 @@
             // 
             this.LagKillerCheckBox.AutoSize = true;
             this.LagKillerCheckBox.Font = new System.Drawing.Font("Segoe UI", 7.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.LagKillerCheckBox.Location = new System.Drawing.Point(26, 41);
+            this.LagKillerCheckBox.Location = new System.Drawing.Point(18, 64);
             this.LagKillerCheckBox.Name = "LagKillerCheckBox";
             this.LagKillerCheckBox.Size = new System.Drawing.Size(72, 17);
             this.LagKillerCheckBox.TabIndex = 3;
@@ -321,7 +335,7 @@
             // 
             this.ProvokeCheckBox.AutoSize = true;
             this.ProvokeCheckBox.Font = new System.Drawing.Font("Segoe UI", 7.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.ProvokeCheckBox.Location = new System.Drawing.Point(165, 22);
+            this.ProvokeCheckBox.Location = new System.Drawing.Point(28, 41);
             this.ProvokeCheckBox.Name = "ProvokeCheckBox";
             this.ProvokeCheckBox.Size = new System.Drawing.Size(67, 17);
             this.ProvokeCheckBox.TabIndex = 2;
@@ -333,7 +347,7 @@
             // 
             this.InfiniteRangeCheckBox.AutoSize = true;
             this.InfiniteRangeCheckBox.Font = new System.Drawing.Font("Segoe UI", 7.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.InfiniteRangeCheckBox.Location = new System.Drawing.Point(13, 22);
+            this.InfiniteRangeCheckBox.Location = new System.Drawing.Point(138, 22);
             this.InfiniteRangeCheckBox.Name = "InfiniteRangeCheckBox";
             this.InfiniteRangeCheckBox.Size = new System.Drawing.Size(99, 17);
             this.InfiniteRangeCheckBox.TabIndex = 1;
@@ -396,6 +410,11 @@
             this.BroadcastMSG.UseVisualStyleBackColor = true;
             this.BroadcastMSG.Click += new System.EventHandler(this.BroadcastMSG_Click);
             // 
+            // GetHostName
+            // 
+            this.GetHostName.Interval = 500;
+            this.GetHostName.Tick += new System.EventHandler(this.GetHostName_Tick);
+            // 
             // ActionX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -457,5 +476,7 @@
         private CheckBox ProvokeCheckBox;
         private CheckBox InfiniteRangeCheckBox;
         private LinkLabel UnlockLabel;
+        private System.Windows.Forms.Timer GetHostName;
+        private CheckBox AutoAttackCheckBox;
     }
 }
