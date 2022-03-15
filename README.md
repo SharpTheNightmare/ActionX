@@ -1,5 +1,8 @@
 # ActionX
 
-Gaming
+ActionX Plugin for [RBot](https://github.com/brenohenrike/rbot) 
 
-ActionX Plugin for [RBot](https://github.com/brenohenrike/rbot) (Credit to [Froztt](https://github.com/dwiki08) for ActionHost/ActionClient)
+ActionX is a network orientated maid plugin
+
+
+(Credit to [Froztt](https://github.com/dwiki08) for ActionHost/ActionClient)
